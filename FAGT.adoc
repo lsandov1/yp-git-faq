@@ -1,0 +1,139 @@
+== DRAFT: FAGT (Frequently Asked Git Tasks) in the Yocto Project
+:Author:    Leo Sandoval
+:Email:     leonardo.sandoval.gonzalez@intel.com
+:Date:      Mon Mar 14 08:43:17 CDT 2016
+:Revision:  0.1
+
+Before starting, let's review the `git` Terminology: http://ndpsoftware.com/git-cheatsheet.html
+
+=== Help and Books
+* How do I get `git` help?
+
+  [source,console]
+  $ git help <cmd>
+
+
+* There are many books, lots of tutorials, but one good book that goes from
+  basics to advance is: https://git-scm.com/book/en/v2
+
+=== Git Setup
+
+* How do I set my name and email on `git`?
+  
+  [source,console]
+  $ git config --global user.name "<your name>"
+  $ git config --global user.email <your email>
+
+  NOTE: use your email that you will use to send patches
+
+* How do I configure `git` to send emails?
+
+  [source,console]
+  # Configuration
+  $ git config --global sendemail.name "<your name>"
+  $ git config --global sendemail.from "<your email>"
+  $ git config --global sendemail.smtpserver "<your server>"
+  $ git config --global sendemail.smtpserverport 25
+  $ git config --global sendemail.confirm auto
+
+  # Testing
+  $ git send-email -1 --to "<your email>"
+
+=== Poky Setup
+
+* How do I get the source code?
+  The Yocto Project is a project umbrella http://git.yoctoproject.org/, not a
+  single project. Perhaps what you are more interested is in the Poky Project
+  http://git.yoctoproject.org/cgit/cgit.cgi/poky/, the project that bridges
+  `metadata` (OE-Core) and `bitbake` to produce a  Linux Distribution.
+
+  [source,console]
+  $ cd $HOME
+  $ git clone git://git.yoctoproject.org/poky
+
+=== Poky Branches and creation
+
+* How do I list the Poky branches?
+  Two ways: web interface http://git.yoctoproject.org/cgit/cgit.cgi/poky/ or command line
+
+  [source,console]
+  $ git branch -a
+
+* Which remote branch/tags should I use to start working?
+  There are many branches and tags, so make sure in which branch (or tag) the
+  issue was found. Once identify, you can start working with
+
+  .Branch creation
+  [source,console]
+  # Branch from a tag
+  $ git branch myyocto-2.0.1 yocto-2.0.1
+  
+  # or branching from an upstream branch
+  $ git branch myjethro origin/jethro
+
+  # or branching from upstream master
+  $ git branch mymaster origin/master
+
+  .Checkout to the just created branch
+  [source,console]
+  $ git checkout mymaster
+
+=== Patching
+
+* How do I apply a patch?
+  Sometimes, you just want to apply a certain patch to a specific (local) branch. This
+  patch can come from several places, so the answer depends on where the patch
+  is coming from:
+  * Patch that is already a commit, but in a different branch
+  
+  [source,console]
+  $ git checkout mymaster
+  $ git cherry-pick <SHA-ID>
+  $ vim # correct conflicts, if necessary
+  # git cherry-pick --continue
+  
+  * Patch is in the mailing list. You can fetch the mbox from the patchwork http://patchwork.openembedded.org/
+    instance and apply it manually
+  
+  .Current PW instance (from OZLabs)
+  [source,console]
+  $ curl http://patchwork.openembedded.org/patch/117939/mbox/ | git apply
+
+  . Or using `git` with PW instance (from Damien) to be launched soon (see
+  appendix to see how the `git-pw` and the repository is configured.
+
+  [source,console]
+  $ git checkout mymaster
+  $ git pw am <series ID> [-r <revision ID>]
+
+=== Commit
+
+* How do I create a commit?
+  Create a branch, do your changes, add them into index, then commit. Make
+  sure you read the
+  http://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines, so you will
+  have less trouble on the mailing list
+
+  [source,console]
+  $ git branch myfix origin/master
+  $ git checkout myfix
+  $ vim
+  $ git add <file 1> <file 2> ....
+  $ git commit -s
+
+=== Appendix
+
+==== `git-pw` setup
+
+  [source,console]
+  $ cd $HOME
+  $ git clone https://github.com/dlespiau/patchwork.git
+  $ mkdir $HOME/bin
+  $ cd $HOME/bin
+  $ ln -s $HOME/patchwork/git-pw/git-pw
+  $ cd $HOME/poky
+  $ PWURL="<your pw instance url>"
+  $ PWPROJECT="oe-core"
+  $ git config patchwork.default.url $PWURL
+  $ git config patchwork.default.project $PWPROJECT
+    	     	 
