@@ -1,4 +1,4 @@
-== DRAFT: FAGT (Frequently Asked Git Tasks) in the Yocto Project
+== DRAFT: Frequently Asked Git Tasks in the Yocto Project
 :Author:    Leo Sandoval
 :Email:     leonardo.sandoval.gonzalez@intel.com
 :Date:      Mon Mar 14 08:43:17 CDT 2016
